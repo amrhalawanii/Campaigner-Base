@@ -20,8 +20,6 @@ export default function CampaignDetailPage({
       <Navbar />
 
       <main className="pt-24 pb-12">
-     
-
         {/* Content */}
         <section className="max-w-[1344px] mx-auto px-4 space-y-10">
           {/* Title + back + bookmark */}
