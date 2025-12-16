@@ -31,6 +31,7 @@ export default function BrandsPage() {
             </div>
             Go back
           </Link>
+          
 
           <h1 className="text-4xl md:text-5xl font-bold mb-4 uppercase">SELECT A BRAND</h1>
           <p className="text-muted-foreground mb-12">Browse campaigns by brand</p>

@@ -14,7 +14,7 @@ export function CaseStudyCard({ id, title, brand, image, description }: CaseStud
   return (
     <Link href={`/case-studies/${id}`}>
       <div className="group relative rounded-xl overflow-hidden bg-card hover:ring-2 hover:ring-accent/50 transition-all duration-300 cursor-pointer">
-        <div className="aspect-[3/4] relative overflow-hidden">
+        <div className="aspect-[4/5] relative overflow-hidden">
           <Image
             src={image || "/placeholder.svg"}
             alt={title}

@@ -19,7 +19,7 @@ export function CampaignCard({ id, title, brand, image, saved: initialSaved = fa
   return (
     <div className="group relative text-white">
       <Link href={`/campaign/${id}`}>
-        <div className="aspect-[4/3] relative overflow-hidden rounded-lg border border-white/20 shadow-[0_0_10px_rgba(0,0,0,0.1)]">
+        <div className="aspect-[4/2] relative overflow-hidden rounded-lg border border-white/20 shadow-[0_0_10px_rgba(0,0,0,0.1)]">
           <Image
             src={image || "/placeholder.svg"}
             alt={title}

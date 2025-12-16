@@ -22,9 +22,7 @@ export function Footer() {
             <Link href="/" className="text-sm hover:text-foreground transition-colors">
               Home
             </Link>
-            <Link href="/contact" className="text-sm hover:text-foreground transition-colors">
-              Contact Us
-            </Link>
+         
           </div>
         </div>
       </div>

@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { User, LogOut, ChevronDown } from "lucide-react"
+import { User, LogOut, ChevronDown, Globe } from "lucide-react"
 import Link from "next/link"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,9 +15,13 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 
+type Language = "english" | "arabic"
+
 export function UserDropdown() {
   const [showLogoutDialog, setShowLogoutDialog] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(true) // Mock auth state
+  const [selectedLanguage, setSelectedLanguage] = useState<Language>("english")
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   const handleLogout = () => {
     setShowLogoutDialog(true)
@@ -28,6 +32,11 @@ export function UserDropdown() {
     setIsAuthenticated(false)
     setShowLogoutDialog(false)
     window.location.href = "/sign-in"
+  }
+
+  const handleLanguageChange = (language: Language) => {
+    setSelectedLanguage(language)
+    // Handle language change logic here
   }
 
   if (!isAuthenticated) {
@@ -42,29 +51,39 @@ export function UserDropdown() {
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger className="flex items-center gap-2 p-2 hover:bg-secondary/50 rounded-full transition-colors outline-none">
-          <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center overflow-hidden">
+      <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+        <DropdownMenuTrigger className="backdrop-blur-[25px] bg-[rgba(8,33,37,0.5)] border-[0.5px] border-[rgba(57,77,81,0.5)] flex items-center justify-center gap-2 h-10 px-1 py-2 rounded-[32px] transition-colors outline-none hover:bg-[rgba(8,33,37,0.7)]">
+          <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center overflow-hidden shrink-0">
             <User className="w-6 h-6 text-background" />
           </div>
-          <ChevronDown className="w-4 h-4 text-muted-foreground" />
+          <ChevronDown className={`w-3.5 h-3.5 text-white shrink-0 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`} />
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-64 bg-[#1a2e2e] border-[#2a4040] p-4 mt-2">
-          <div className="h-px bg-[#2a4040] my-2" />
+        <DropdownMenuContent 
+          align="end" 
+          className="w-auto min-w-[200px] bg-[rgba(8,33,37,0.66)] border border-[rgba(255,255,255,0.05)] p-4 mt-2 rounded-lg"
+        >
+          {/* Profile Section */}
 
-          <DropdownMenuItem asChild className="p-4 hover:bg-[#2a4040] rounded-lg cursor-pointer">
-            <Link href="/profile" className="flex items-center gap-4">
-              <User className="w-6 h-6 text-white" />
-              <span className="text-white text-lg">Profile</span>
+          <DropdownMenuItem 
+            className="p-0 h-auto focus:bg-transparent hover:bg-transparent cursor-pointer"
+          >
+           <Link href="/profile" className="flex items-center gap-3 h-[27px] w-full px-2 py-1.5 rounded-lg hover:bg-[#2a4040] transition-colors">
+              <User className="w-6 h-6 text-white shrink-0" />
+              <span className="text-white text-base font-medium leading-[27px]">Profile</span>
             </Link>
           </DropdownMenuItem>
 
-          <div className="h-px bg-[#2a4040] my-2" />
+          {/* Separator */}
+          <DropdownMenuSeparator className="bg-[rgba(255,255,255,0.05)] my-4" />
 
-          <DropdownMenuItem onClick={handleLogout} className="p-4 hover:bg-[#2a4040] rounded-lg cursor-pointer">
-            <div className="flex items-center gap-4">
-              <LogOut className="w-6 h-6 text-white" />
-              <span className="text-white text-lg">Logout</span>
+          {/* Logout Section */}
+          <DropdownMenuItem 
+            onClick={handleLogout} 
+            className="p-0 h-auto focus:bg-transparent hover:bg-transparent cursor-pointer"
+          >
+            <div className="flex items-center gap-3 h-[27px] w-full px-2 py-1.5 rounded-lg hover:bg-[#2a4040] transition-colors">
+              <LogOut className="w-6 h-6 text-white shrink-0" />
+              <span className="text-white text-base font-medium leading-[27px]">Logout</span>
             </div>
           </DropdownMenuItem>
         </DropdownMenuContent>
