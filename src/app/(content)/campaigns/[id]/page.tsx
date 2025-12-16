@@ -7,6 +7,7 @@ import { Bookmark, ChevronLeft } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import { ArrowLeft } from "lucide-react"
 
 export default async function CampaignDetailPage({
   params,
@@ -30,13 +31,17 @@ export default async function CampaignDetailPage({
           {/* Title + back + bookmark */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <Link
-                href="/"
-                className="inline-flex items-center gap-2 text-sm text-[#cced00] hover:text-[#d6ff2f] transition-colors"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                Back
-              </Link>
+            <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm text-[#cced00] hover:text-[#d6ff2f] transition-colors"
+            >
+            <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center">
+              <ArrowLeft className="w-4 h-4 text-black" />
+            </div>
+            <span className="text-foreground">Go back</span>
+          </Link>
+             
+              
               <Button
                 size="icon"
                 variant="outline"

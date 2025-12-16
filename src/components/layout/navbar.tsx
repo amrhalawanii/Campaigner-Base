@@ -56,11 +56,12 @@ export function Navbar() {
           {!isSearchOpen && (
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="backdrop-blur-[15px] flex items-center justify-center h-12 p-2 transition-colors"
+              className=" flex items-center justify-center h-12 p-2 transition-colors"
               aria-label="Search campaigns"
             >
               <Search className="w-6 h-6 text-white" />
             </button>
+
           )}
 
           {/* Vertical Separator */}
