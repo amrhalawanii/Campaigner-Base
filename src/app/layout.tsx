@@ -2,8 +2,9 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
-import { SearchProvider } from "@/hooks/search-context"
-import { SearchModal } from "@/components/search-modal"
+import { SearchProvider } from "@/lib/contexts/search-context"
+import { SearchModal } from "@/components/search/search-modal"
+import { VersionLogger } from "@/components/shared/version-logger"
 import "@/styles/globals.css"
 import { Suspense } from "react"
 
@@ -40,7 +41,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-sans antialiased`}>
+      <body className={`font-sans antialiased`} suppressHydrationWarning>
+        <VersionLogger />
         <Suspense fallback={<div>Loading...</div>}>
           <SearchProvider>
             {children}
