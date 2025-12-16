@@ -52,7 +52,7 @@ export function UserDropdown() {
   return (
     <>
       <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
-        <DropdownMenuTrigger className="backdrop-blur-[25px] bg-[rgba(8,33,37,0.5)] border-[0.5px] border-[rgba(57,77,81,0.5)] flex items-center justify-center gap-2 h-10 px-1 py-2 rounded-[32px] transition-colors outline-none hover:bg-[rgba(8,33,37,0.7)]">
+        <DropdownMenuTrigger className="backdrop-blur-[25px] bg-[rgba(8,33,37,0.7)] border-[0.5px] border-[rgba(57,77,81,0.5)] flex items-center justify-center gap-2 h-10 px-1 py-2 rounded-[32px] transition-colors outline-none hover:bg-[rgba(8,33,37,0.7)]">
           <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center overflow-hidden shrink-0">
             <User className="w-6 h-6 text-background" />
           </div>

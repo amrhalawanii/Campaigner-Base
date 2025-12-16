@@ -1,14 +1,7 @@
-<<<<<<<< HEAD:src/app/channel/[id]/page.tsx
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
-import { CampaignCard } from "@/components/campaign-card"
-import { campaigns } from "@/data/campaigns"
-========
 import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
 import { CampaignCard } from "@/components/campaign/campaign-card"
 import { campaigns } from "@/lib/data/campaign-data"
->>>>>>>> restructure:src/app/(explore)/channel/[id]/page.tsx
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 

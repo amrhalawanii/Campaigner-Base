@@ -1,14 +1,7 @@
-<<<<<<<< HEAD:src/app/case-studies/page.tsx
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
-import { CaseStudyCard } from "@/components/case-study-card"
-import { caseStudies } from "@/data/campaigns"
-========
 import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
 import { CaseStudyCard } from "@/components/campaign/case-study-card"
 import { caseStudies } from "@/lib/data/campaign-data"
->>>>>>>> restructure:src/app/(content)/case-studies/page.tsx
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 

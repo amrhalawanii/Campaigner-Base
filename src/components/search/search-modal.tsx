@@ -2,15 +2,9 @@
 
 import { useEffect, useState } from "react"
 import { Search, X } from "lucide-react"
-<<<<<<<< HEAD:src/components/search-modal.tsx
-import { useSearch } from "@/hooks/search-context"
-import { campaigns } from "@/data/campaigns"
-import { CampaignCard } from "@/components/campaign-card"
-========
 import { useSearch } from "@/lib/contexts/search-context"
 import { campaigns } from "@/lib/data/campaign-data"
 import { CampaignCard } from "@/components/campaign/campaign-card"
->>>>>>>> restructure:src/components/search/search-modal.tsx
 
 export function SearchModal() {
   const { isSearchOpen, setIsSearchOpen, searchQuery, setSearchQuery } = useSearch()

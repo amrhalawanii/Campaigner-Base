@@ -1,12 +1,6 @@
-<<<<<<<< HEAD:src/app/agencies/page.tsx
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
-import { agencies } from "@/data/campaigns"
-========
 import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
 import { agencies } from "@/lib/data/campaign-data"
->>>>>>>> restructure:src/app/(explore)/agencies/page.tsx
 import Link from "next/link"
 import { ArrowLeft, ChevronRight } from "lucide-react"
 

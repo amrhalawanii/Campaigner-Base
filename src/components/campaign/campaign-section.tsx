@@ -1,10 +1,6 @@
 import { CampaignCard } from "./campaign-card"
 import { ChevronRight } from "lucide-react"
-<<<<<<<< HEAD:src/components/campaign-section.tsx
-import type { Campaign } from "@/data/campaigns"
-========
 import type { Campaign } from "@/lib/data/campaign-data"
->>>>>>>> restructure:src/components/campaign/campaign-section.tsx
 import Link from "next/link"
 
 interface CampaignSectionProps {

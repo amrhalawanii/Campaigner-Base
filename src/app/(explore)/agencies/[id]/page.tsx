@@ -1,14 +1,7 @@
-<<<<<<<< HEAD:src/app/agencies/[id]/page.tsx
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
-import { campaigns, agencies } from "@/data/campaigns"
-import { CampaignCard } from "@/components/campaign-card"
-========
 import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
 import { campaigns, agencies } from "@/lib/data/campaign-data"
 import { CampaignCard } from "@/components/campaign/campaign-card"
->>>>>>>> restructure:src/app/(explore)/agencies/[id]/page.tsx
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { notFound } from "next/navigation"
