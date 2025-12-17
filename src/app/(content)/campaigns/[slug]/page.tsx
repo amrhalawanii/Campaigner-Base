@@ -9,14 +9,15 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import { ShareButton } from "@/components/shared/share-button"
+import { createSlug } from "@/lib/utils/slug"
 
 export default async function CampaignDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ slug: string }>
 }) {
-  const { id } = await params
-  const campaign = campaigns.find((c) => c.id === Number(id))
+  const { slug } = await params
+  const campaign = campaigns.find((c) => createSlug(c.title) === slug)
 
   if (!campaign) {
     notFound()
@@ -45,7 +46,7 @@ export default async function CampaignDetailPage({
               <div className="flex items-center gap-2">
                 <ShareButton 
                   title={campaign.title}
-                  campaignId={campaign.id}
+                  slug={createSlug(campaign.title)}
                 />
                 <Button
                   size="icon"

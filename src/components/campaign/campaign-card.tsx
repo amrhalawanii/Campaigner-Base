@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Bookmark } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { createSlug } from "@/lib/utils/slug"
 
 interface CampaignCardProps {
   id: number
@@ -15,10 +16,11 @@ interface CampaignCardProps {
 
 export function CampaignCard({ id, title, brand, image, saved: initialSaved = false }: CampaignCardProps) {
   const [saved, setSaved] = useState(initialSaved)
+  const slug = createSlug(title)
 
   return (
     <div className="group relative text-white">
-      <Link href={`/campaigns/${id}`}>
+      <Link href={`/campaigns/${slug}`}>
         <div className="aspect-[4/2] relative overflow-hidden rounded-lg border border-white/20 shadow-[0_0_10px_rgba(0,0,0,0.1)]">
           <Image
             src={image || "/placeholder.svg"}
@@ -42,7 +44,7 @@ export function CampaignCard({ id, title, brand, image, saved: initialSaved = fa
       </Link>
 
       <div className="mt-4">
-        <Link href={`/campaigns/${id}`}>
+        <Link href={`/campaigns/${slug}`}>
           <h3 className="font-semibold text-base text-white group-hover:text-accent transition-colors line-clamp-1">
             {title}
           </h3>

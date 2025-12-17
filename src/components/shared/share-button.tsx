@@ -6,14 +6,14 @@ import { Share2, Check } from "lucide-react"
 
 interface ShareButtonProps {
   title: string
-  campaignId: number
+  slug: string
 }
 
-export function ShareButton({ title, campaignId }: ShareButtonProps) {
+export function ShareButton({ title, slug }: ShareButtonProps) {
   const [copied, setCopied] = useState(false)
 
   const handleShare = async () => {
-    const url = `${window.location.origin}/campaigns/${campaignId}`
+    const url = `${window.location.origin}/campaigns/${slug}`
     const shareData = {
       title: title,
       url: url,
