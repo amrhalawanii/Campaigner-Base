@@ -60,7 +60,7 @@ export function UserDropdown() {
         </DropdownMenuTrigger>
         <DropdownMenuContent 
           align="end" 
-          className="backdrop-blur-[20px] w-auto min-w-[200px] bg-[rgba(8,33,37,0.5)] border border-[rgba(255,255,255,0.05)] p-4 mt-2 rounded-lg"
+          className="backdrop-blur-[10px] w-auto min-w-[200px] bg-[rgba(8,33,37,0.5)] border border-[rgba(255,255,255,0.05)] p-4 mt-2 rounded-lg"
         >
           {/* Profile Section */}
 
@@ -72,7 +72,7 @@ export function UserDropdown() {
               <span className="text-white text-base font-medium leading-[27px]">Profile</span>
             </Link>
           </DropdownMenuItem>
-
+          image.png
           {/* Separator */}
           <DropdownMenuSeparator className="bg-[rgba(255,255,255,0.05)] my-4" />
 
