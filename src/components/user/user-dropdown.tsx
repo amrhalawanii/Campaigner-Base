@@ -72,7 +72,7 @@ export function UserDropdown() {
               <span className="text-white text-base font-medium leading-[27px]">Profile</span>
             </Link>
           </DropdownMenuItem>
-          image.png
+
           {/* Separator */}
           <DropdownMenuSeparator className="bg-[rgba(255,255,255,0.05)] my-4" />
 
