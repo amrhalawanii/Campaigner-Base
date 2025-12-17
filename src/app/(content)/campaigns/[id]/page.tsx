@@ -3,11 +3,12 @@ import { Footer } from "@/components/layout/footer"
 import { CampaignSection } from "@/components/campaign/campaign-section"
 import { campaigns } from "@/lib/data/campaign-data"
 import { Button } from "@/components/ui/button"
-import { Bookmark, ChevronLeft } from "lucide-react"
+import { Bookmark, ChevronLeft, Share2 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
+import { ShareButton } from "@/components/shared/share-button"
 
 export default async function CampaignDetailPage({
   params,
@@ -41,15 +42,20 @@ export default async function CampaignDetailPage({
             <span className="text-foreground">Go back</span>
           </Link>
              
-              
-              <Button
-                size="icon"
-                variant="outline"
-                className="h-10 w-10 rounded-full border-white/30 bg-black/40 hover:bg-black/60"
-                aria-label="Save campaign"
-              >
-                <Bookmark className="w-5 h-5" />
-              </Button>
+              <div className="flex items-center gap-2">
+                <ShareButton 
+                  title={campaign.title}
+                  campaignId={campaign.id}
+                />
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="h-10 w-10 rounded-full backdrop-blur-[25px] border border-[rgba(57,77,81,0.5)] bg-black/40 hover:bg-[rgba(204,237,0,0.2)] hover:border-[rgba(204,237,0,0.3)] transition-all duration-200 group"
+                  aria-label="Save campaign"
+                >
+                  <Bookmark className="w-5 h-5 text-white group-hover:text-[#CCED00] transition-colors duration-200" />
+                </Button>
+              </div>
             </div>
 
             <div className="space-y-1">
