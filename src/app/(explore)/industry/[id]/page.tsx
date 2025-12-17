@@ -21,7 +21,7 @@ const industryNames: Record<string, string> = {
 export default function IndustryDetailPage() {
   const params = useParams()
   const router = useRouter()
-  const industryId = params.id as string
+  const industryId = (params?.id as string) || ""
   const industryName = industryNames[industryId] || "Industry"
 
   // Filter campaigns by industry (for now showing all, you can add industry field to campaign data)
@@ -31,13 +31,13 @@ export default function IndustryDetailPage() {
     <div className="min-h-screen">
       <Navbar />
 
-      <main className="pt-24 pb-12">
+      <main className="pt-32 pb-12">
         <div className="container mx-auto px-6">
           <button
             onClick={() => router.back()}
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
           >
-            <div className="w-8 h-8 rounded-full bg-lime-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-[#CCED00] flex items-center justify-center">
               <ArrowLeft className="w-4 h-4 text-black" />
             </div>
             Go back

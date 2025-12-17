@@ -1,9 +1,9 @@
 "use client"
 
 import { useEffect, useState, useRef } from "react"
-import { CampaignCard } from "./campaign-card"
+import { CaseStudyCard } from "./case-study-card"
 import { ChevronRight } from "lucide-react"
-import type { Campaign } from "@/lib/data/campaign-data"
+import type { CaseStudy } from "@/lib/data/campaign-data"
 import Link from "next/link"
 import {
   Carousel,
@@ -14,18 +14,17 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel"
 
-interface CampaignSectionProps {
+interface CaseStudySectionProps {
   title: string
-  campaigns: Campaign[]
+  caseStudies: CaseStudy[]
   viewMoreLink?: string
 }
 
-export function CampaignSection({ title, campaigns, viewMoreLink }: CampaignSectionProps) {
-  // Show exactly 10 campaigns (or all available if less than 10)
-  const displayedCampaigns = campaigns.slice(0, 10)
+export function CaseStudySection({ title, caseStudies, viewMoreLink }: CaseStudySectionProps) {
+  // Show exactly 10 case studies (or all available if less than 10)
+  const displayedCaseStudies = caseStudies.slice(0, 10)
   const [api, setApi] = useState<CarouselApi>()
   const carouselContainerRef = useRef<HTMLDivElement>(null)
-  const isMouseOverRef = useRef(false)
 
   useEffect(() => {
     if (!api || !carouselContainerRef.current) return
@@ -37,10 +36,9 @@ export function CampaignSection({ title, campaigns, viewMoreLink }: CampaignSect
 
     let scrollAccumulator = 0
     let scrollTimeout: NodeJS.Timeout
-    const SCROLL_THRESHOLD = 100 // Accumulate scroll deltas before triggering
+    const SCROLL_THRESHOLD = 100
 
     const handleWheel = (e: WheelEvent) => {
-      // Check if mouse/trackpad is over the carousel content
       const rect = carouselContent.getBoundingClientRect()
       const isOverCarousel = 
         e.clientX >= rect.left && 
@@ -50,7 +48,6 @@ export function CampaignSection({ title, campaigns, viewMoreLink }: CampaignSect
 
       if (!isOverCarousel) return
 
-      // Handle horizontal scrolling (for trackpad horizontal gestures)
       if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
         e.preventDefault()
         e.stopPropagation()
@@ -73,7 +70,6 @@ export function CampaignSection({ title, campaigns, viewMoreLink }: CampaignSect
         return
       }
 
-      // Handle vertical scrolling (for trackpad vertical gestures)
       if (Math.abs(e.deltaY) > 0) {
         e.preventDefault()
         e.stopPropagation()
@@ -96,7 +92,6 @@ export function CampaignSection({ title, campaigns, viewMoreLink }: CampaignSect
       }
     }
 
-    // Listen to wheel events directly on carousel content for better trackpad support
     carouselContent.addEventListener("wheel", handleWheel, { passive: false })
 
     return () => {
@@ -131,17 +126,18 @@ export function CampaignSection({ title, campaigns, viewMoreLink }: CampaignSect
           }}
           className="w-full"
         >
-        <CarouselContent className="-ml-2 md:-ml-4">
-          {displayedCampaigns.map((campaign) => (
-            <CarouselItem key={campaign.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
-              <CampaignCard {...campaign} />
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious className="left-0 bg-black/60 hover:bg-black/80 border-white/20 text-white" />
-        <CarouselNext className="right-0 bg-black/60 hover:bg-black/80 border-white/20 text-white" />
-      </Carousel>
+          <CarouselContent className="-ml-2 md:-ml-4">
+            {displayedCaseStudies.map((study) => (
+              <CarouselItem key={study.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                <CaseStudyCard {...study} />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="left-0 bg-black/60 hover:bg-black/80 border-white/20 text-white" />
+          <CarouselNext className="right-0 bg-black/60 hover:bg-black/80 border-white/20 text-white" />
+        </Carousel>
       </div>
     </section>
   )
 }
+

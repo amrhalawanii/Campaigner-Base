@@ -32,7 +32,7 @@ export const API_ENDPOINTS = {
 export const APP_CONFIG = {
   NAME: "Campaigner",
   VERSION: "V1.0.0",
-  DESCRIPTION: "A visual-first marketing inspiration platform for marketers",
+  DESCRIPTION: "A visual first marketing inspiration platform for marketers",
 } as const
 
 // UI Constants

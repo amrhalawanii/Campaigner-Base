@@ -1,15 +1,19 @@
+"use client"
+
 import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
+import { CategoryCarousel } from "@/components/shared/category-carousel"
 import { CampaignCard } from "@/components/campaign/campaign-card"
 import { campaigns } from "@/lib/data/campaign-data"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 
 export default function TimePage() {
-  const years = Array.from(new Set(campaigns.map((c) => c.year).filter(Boolean))).sort((a, b) => b! - a!)
+  // Generate years from 2000 to 2025 (in descending order)
+  const years = Array.from({ length: 26 }, (_, i) => 2025 - i)
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-b from-[#171a00] to-black text-white">
       <Navbar />
 
       <main className="pt-24 pb-12">
@@ -18,7 +22,7 @@ export default function TimePage() {
             href="/"
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
           >
-            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-[#CCED00] flex items-center justify-center">
               <ArrowLeft className="w-4 h-4 text-black" />
             </div>
             Go back
@@ -29,15 +33,17 @@ export default function TimePage() {
 
           {years.map((year) => {
             const yearCampaigns = campaigns.filter((c) => c.year === year)
+            
             return (
-              <div key={year} className="mb-16">
-                <h2 className="text-3xl font-bold mb-6">{year}</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {yearCampaigns.map((campaign) => (
-                    <CampaignCard key={campaign.id} {...campaign} />
-                  ))}
-                </div>
-              </div>
+              <CategoryCarousel
+                key={year}
+                title={year.toString()}
+                items={yearCampaigns}
+                renderItem={(campaign) => <CampaignCard {...campaign} />}
+                viewMoreLink={yearCampaigns.length > 0 ? `/time/${year}` : undefined}
+                maxItems={10}
+                itemKey={(campaign) => campaign.id}
+              />
             )
           })}
         </div>

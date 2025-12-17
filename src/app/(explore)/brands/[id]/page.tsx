@@ -20,7 +20,7 @@ export default async function BrandDetailPage({ params }: { params: Promise<{ id
     <div className="min-h-screen">
       <Navbar />
 
-      <main className="pt-24 pb-12">
+      <main className="pt-32 pb-12">
         <div className="container mx-auto px-6 max-w-7xl">
           <Link
             href="/brands"

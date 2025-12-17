@@ -32,7 +32,7 @@ export default async function ChannelDetailPage({ params }: { params: Promise<{ 
             href="/channel"
             className="inline-flex items-center gap-2 mb-8 text-muted-foreground hover:text-foreground transition-colors"
           >
-            <div className="w-8 h-8 rounded-full bg-lime-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-[#CCED00] flex items-center justify-center">
               <ArrowLeft className="w-4 h-4 text-black" />
             </div>
             <span className="text-sm font-medium">Go back</span>

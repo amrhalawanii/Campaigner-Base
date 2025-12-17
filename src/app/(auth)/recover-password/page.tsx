@@ -25,7 +25,7 @@ export default function RecoverPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6" style={{ backgroundColor: "#2a3326" }}>
+    <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-b from-[#171a00] to-black">
       {/* Logo */}
       <div className="absolute top-8 left-8">
         <Link href="/" className="flex items-center gap-2">
