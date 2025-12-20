@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { SearchProvider } from "@/lib/contexts/search-context"
+import { AuthProvider } from "@/contexts/AuthContext"
 import { SearchModal } from "@/components/search/search-modal"
 import { VersionLogger } from "@/components/shared/version-logger"
 import "@/styles/globals.css"
@@ -44,10 +45,12 @@ export default function RootLayout({
       <body className={`font-sans antialiased`} suppressHydrationWarning>
         <VersionLogger />
         <Suspense fallback={<div>Loading...</div>}>
-          <SearchProvider>
-            {children}
-            <SearchModal />
-          </SearchProvider>
+          <AuthProvider>
+            <SearchProvider>
+              {children}
+              <SearchModal />
+            </SearchProvider>
+          </AuthProvider>
         </Suspense>
         <Analytics />
       </body>

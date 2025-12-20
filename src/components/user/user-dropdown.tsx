@@ -1,8 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { User, LogOut, ChevronDown, Globe } from "lucide-react"
+import { User, LogOut, ChevronDown } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import {
   AlertDialog,
@@ -14,29 +15,22 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-
-type Language = "english" | "arabic"
+import { useAuth } from "@/hooks/useAuth"
 
 export function UserDropdown() {
+  const router = useRouter()
+  const { isAuthenticated, user, logout, loading } = useAuth()
   const [showLogoutDialog, setShowLogoutDialog] = useState(false)
-  const [isAuthenticated, setIsAuthenticated] = useState(true) // Mock auth state
-  const [selectedLanguage, setSelectedLanguage] = useState<Language>("english")
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   const handleLogout = () => {
     setShowLogoutDialog(true)
   }
 
-  const confirmLogout = () => {
-    // Handle logout logic here
-    setIsAuthenticated(false)
+  const confirmLogout = async () => {
+    await logout()
     setShowLogoutDialog(false)
-    window.location.href = "/sign-in"
-  }
-
-  const handleLanguageChange = (language: Language) => {
-    setSelectedLanguage(language)
-    // Handle language change logic here
+    router.push("/sign-in")
   }
 
   if (!isAuthenticated) {
@@ -63,7 +57,6 @@ export function UserDropdown() {
           className="backdrop-blur-[10px] w-auto min-w-[200px] bg-[rgba(8,33,37,0.5)] border border-[rgba(255,255,255,0.05)] p-4 mt-2 rounded-lg"
         >
           {/* Profile Section */}
-
           <DropdownMenuItem 
             className="p-0 h-auto focus:bg-transparent hover:bg-transparent cursor-pointer"
           >
@@ -103,9 +96,10 @@ export function UserDropdown() {
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmLogout}
+              disabled={loading}
               className="bg-accent hover:bg-accent/90 text-background font-bold"
             >
-              Logout
+              {loading ? "Logging out..." : "Logout"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
