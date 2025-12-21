@@ -8,9 +8,13 @@ import { useRouter } from "next/navigation"
 import { Eye, EyeOff, Lock, Mail, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useAuth } from "@/lib/contexts/auth-context"
+import { ErrorHandler } from "@/lib/utils/error-handler"
+import { toast } from "@/hooks/use-toast"
 
 export default function RegisterPage() {
   const router = useRouter()
+  const { signup } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [formData, setFormData] = useState({
@@ -20,22 +24,61 @@ export default function RegisterPage() {
     confirmPassword: "",
   })
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError(null)
 
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match")
+      setError("Passwords do not match")
+      toast({
+        title: "Validation Error",
+        description: "Passwords do not match",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters long")
+      toast({
+        title: "Validation Error",
+        description: "Password must be at least 6 characters long",
+        variant: "destructive",
+      })
       return
     }
 
     setIsLoading(true)
 
-    // Simulate registration
-    setTimeout(() => {
-      setIsLoading(false)
+    try {
+      await signup({
+        email: formData.email,
+        password: formData.password,
+        signin_method: 'email',
+        full_name: formData.name,
+      })
+      
+      toast({
+        title: "Success",
+        description: "Account created successfully!",
+      })
+      
       router.push("/")
-    }, 1000)
+    } catch (err: any) {
+      const appError = ErrorHandler.handleApiError(err)
+      const errorMessage = ErrorHandler.getUserFriendlyMessage(appError)
+      ErrorHandler.logError(appError, 'Register Page')
+      setError(errorMessage)
+      toast({
+        title: "Registration Failed",
+        description: errorMessage,
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleSocialSignUp = (provider: string) => {
@@ -169,6 +212,12 @@ export default function RegisterPage() {
               {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
+
+          {error && (
+            <div className="text-sm text-red-400 bg-red-900/20 border border-red-800 rounded-md p-3">
+              {error}
+            </div>
+          )}
         </form>
 
         <div className="flex items-center justify-end mt-3">

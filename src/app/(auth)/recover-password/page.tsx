@@ -7,21 +7,43 @@ import Link from "next/link"
 import { ArrowLeft, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { userService } from "@/lib/services/user.service"
+import { ErrorHandler } from "@/lib/utils/error-handler"
+import { toast } from "@/hooks/use-toast"
 
 export default function RecoverPasswordPage() {
   const [email, setEmail] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError(null)
     setIsLoading(true)
 
-    // Simulate password recovery
-    setTimeout(() => {
-      setIsLoading(false)
+    try {
+      // Send verification code to email
+      await userService.sendVerificationCode({ email })
+      
       setIsSubmitted(true)
-    }, 1000)
+      toast({
+        title: "Success",
+        description: "Password recovery link sent to your email",
+      })
+    } catch (err: any) {
+      const appError = ErrorHandler.handleApiError(err)
+      const errorMessage = ErrorHandler.getUserFriendlyMessage(appError)
+      ErrorHandler.logError(appError, 'Recover Password Page')
+      setError(errorMessage)
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -67,6 +89,12 @@ export default function RecoverPasswordPage() {
                     required
                   />
                 </div>
+
+                {error && (
+                  <div className="text-sm text-red-400 bg-red-900/20 border border-red-800 rounded-md p-3">
+                    {error}
+                  </div>
+                )}
 
                 <Button
                   type="submit"

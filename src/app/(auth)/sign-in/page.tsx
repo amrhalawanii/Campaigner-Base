@@ -1,30 +1,99 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
+import React, { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Eye, EyeOff, Lock, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useAuth } from "@/lib/contexts/auth-context"
+import { ErrorHandler } from "@/lib/utils/error-handler"
+import { toast } from "@/hooks/use-toast"
 
 export default function SignInPage() {
   const router = useRouter()
+  const { login, isAuthenticated } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
+  const [loginMethod, setLoginMethod] = useState<'email' | 'username'>('email')
   const [email, setEmail] = useState("")
+  const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/")
+    }
+  }, [isAuthenticated, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError(null)
+
+    // Validation
+    if (!password || password.length < 6) {
+      setError("Password must be at least 6 characters long")
+      toast({
+        title: "Validation Error",
+        description: "Password must be at least 6 characters long",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (loginMethod === 'email' && !email) {
+      setError("Please enter your email address")
+      toast({
+        title: "Validation Error",
+        description: "Please enter your email address",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (loginMethod === 'username' && !username) {
+      setError("Please enter your username")
+      toast({
+        title: "Validation Error",
+        description: "Please enter your username",
+        variant: "destructive",
+      })
+      return
+    }
+
     setIsLoading(true)
 
-    // Simulate authentication
-    setTimeout(() => {
-      setIsLoading(false)
+    try {
+      const loginData = {
+        password,
+        signin_method: loginMethod,
+        type: loginMethod, // API requires 'type' field
+        ...(loginMethod === 'email' ? { email } : { user_name: username }),
+      }
+
+      await login(loginData)
+      
+      toast({
+        title: "Success",
+        description: "You have successfully signed in.",
+      })
+      
       router.push("/")
-    }, 1000)
+    } catch (err: any) {
+      const appError = ErrorHandler.handleApiError(err)
+      const errorMessage = ErrorHandler.getUserFriendlyMessage(appError)
+      ErrorHandler.logError(appError, 'Sign In Page')
+      setError(errorMessage)
+      toast({
+        title: "Login Failed",
+        description: errorMessage,
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleSocialSignIn = (provider: string) => {
@@ -109,17 +178,72 @@ export default function SignInPage() {
 
           {/* Sign In Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <Input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="pl-10 bg-[#2a2c30] border-0 text-white placeholder:text-gray-500 h-12"
-                required
-              />
+            {/* Login Method Toggle */}
+            <div className="flex gap-2 mb-4">
+              <Button
+                type="button"
+                onClick={() => {
+                  setLoginMethod('email')
+                  setError(null)
+                }}
+                variant={loginMethod === 'email' ? 'default' : 'outline'}
+                className={`flex-1 ${loginMethod === 'email' 
+                  ? 'bg-[#cced00] text-black hover:bg-[#b8d400]' 
+                  : 'bg-[#2a2c30] text-white hover:bg-[#35373b] border-gray-600'
+                }`}
+              >
+                Email
+              </Button>
+              <Button
+                type="button"
+                onClick={() => {
+                  setLoginMethod('username')
+                  setError(null)
+                }}
+                variant={loginMethod === 'username' ? 'default' : 'outline'}
+                className={`flex-1 ${loginMethod === 'username' 
+                  ? 'bg-[#cced00] text-black hover:bg-[#b8d400]' 
+                  : 'bg-[#2a2c30] text-white hover:bg-[#35373b] border-gray-600'
+                }`}
+              >
+                Username
+              </Button>
             </div>
+
+            {/* Email or Username Input */}
+            {loginMethod === 'email' ? (
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value)
+                    setError(null)
+                  }}
+                  className="pl-10 bg-[#2a2c30] border-0 text-white placeholder:text-gray-500 h-12"
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+            ) : (
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Input
+                  type="text"
+                  placeholder="Username"
+                  value={username}
+                  onChange={(e) => {
+                    setUsername(e.target.value)
+                    setError(null)
+                  }}
+                  className="pl-10 bg-[#2a2c30] border-0 text-white placeholder:text-gray-500 h-12"
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+            )}
 
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -127,9 +251,14 @@ export default function SignInPage() {
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                  setError(null)
+                }}
                 className="pl-10 pr-10 bg-[#2a2c30] border-0 text-white placeholder:text-gray-500 h-12"
                 required
+                disabled={isLoading}
+                minLength={6}
               />
               <button
                 type="button"
@@ -145,6 +274,12 @@ export default function SignInPage() {
                 Recover Password
               </Link>
             </div>
+
+            {error && (
+              <div className="text-sm text-red-400 bg-red-900/20 border border-red-800 rounded-md p-3">
+                {error}
+              </div>
+            )}
 
             <Button
               type="submit"

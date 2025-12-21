@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { User, LogOut, ChevronDown, Globe } from "lucide-react"
 import Link from "next/link"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
@@ -14,12 +15,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { useAuth } from "@/lib/contexts/auth-context"
+import { ErrorHandler } from "@/lib/utils/error-handler"
 
 type Language = "english" | "arabic"
 
 export function UserDropdown() {
+  const router = useRouter()
+  const { isAuthenticated, user, logout } = useAuth()
   const [showLogoutDialog, setShowLogoutDialog] = useState(false)
-  const [isAuthenticated, setIsAuthenticated] = useState(true) // Mock auth state
   const [selectedLanguage, setSelectedLanguage] = useState<Language>("english")
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
@@ -27,11 +31,18 @@ export function UserDropdown() {
     setShowLogoutDialog(true)
   }
 
-  const confirmLogout = () => {
-    // Handle logout logic here
-    setIsAuthenticated(false)
-    setShowLogoutDialog(false)
-    window.location.href = "/sign-in"
+  const confirmLogout = async () => {
+    try {
+      await logout()
+      setShowLogoutDialog(false)
+      router.push("/sign-in")
+    } catch (error) {
+      const appError = ErrorHandler.handleApiError(error)
+      ErrorHandler.logError(appError, 'User Dropdown - Logout')
+      // Still redirect even if API call fails
+      setShowLogoutDialog(false)
+      router.push("/sign-in")
+    }
   }
 
   const handleLanguageChange = (language: Language) => {

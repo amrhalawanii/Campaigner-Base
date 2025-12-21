@@ -59,3 +59,6 @@ export interface SearchContextType {
   setIsSearchOpen: (open: boolean) => void
 }
 
+// API Types
+export * from './api.types'
+
