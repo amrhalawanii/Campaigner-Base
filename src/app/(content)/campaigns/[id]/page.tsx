@@ -211,216 +211,251 @@ export default async function CampaignDetailPage({
 
         <main className="pt-24 pb-12">
           {/* Content */}
-          <section className="max-w-[1344px] mx-auto px-4 space-y-10">
-            {/* Title + back + bookmark */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <Link
-                  href="/"
-                  className="inline-flex items-center gap-2 text-sm text-[#cced00] hover:text-[#d6ff2f] transition-colors"
-                >
-                  <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center">
-                    <ArrowLeft className="w-4 h-4 text-black" />
-                  </div>
-                  <span className="text-foreground">Go back</span>
-                </Link>
-                
-                <div className="flex items-center gap-2">
-                  <ShareButton 
-                    title={campaign.title}
-                    slug={createSlug(campaign.title)}
-                  />
-                  <BookmarkButton
-                    campaignId={campaign.id}
-                    initialSaved={campaign.saved}
-                    size="icon"
-                    variant="outline"
-                    className="h-10 w-10 rounded-full backdrop-blur-[25px] border border-[rgba(57,77,81,0.5)] bg-black/40 hover:bg-[rgba(204,237,0,0.2)] hover:border-[rgba(204,237,0,0.3)] transition-all duration-200 group"
-                  />
+          <section className="max-w-[1344px] mx-auto px-4 space-y-12">
+            {/* Header with back button and actions */}
+            <div className="flex items-center justify-between">
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2 text-sm text-[#cced00] hover:text-[#d6ff2f] transition-colors"
+              >
+                <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center">
+                  <ArrowLeft className="w-4 h-4 text-black" />
                 </div>
+                <span className="text-foreground">Go back</span>
+              </Link>
+              
+              <div className="flex items-center gap-3">
+                <ShareButton 
+                  title={campaign.title}
+                  slug={createSlug(campaign.title)}
+                />
+                <BookmarkButton
+                  campaignId={campaign.id}
+                  initialSaved={campaign.saved}
+                  size="icon"
+                  variant="outline"
+                  className="h-10 w-10 rounded-full backdrop-blur-[25px] border border-[rgba(57,77,81,0.5)] bg-black/40 hover:bg-[rgba(204,237,0,0.2)] hover:border-[rgba(204,237,0,0.3)] transition-all duration-200 group"
+                />
               </div>
+            </div>
 
-              <div className="space-y-3">
-                <h1 className="text-2xl md:text-[32px] font-semibold leading-snug">
+            {/* Hero Section with Cover Image */}
+            <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+              <Image
+                src={campaign.image}
+                alt={campaign.title}
+                fill
+                className="object-cover"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+              
+              {/* Title Overlay */}
+              <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
+                <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
                   {campaign.title}
                 </h1>
                 
-                <div className="flex flex-wrap items-center gap-4 text-sm text-white/80">
-                  <div className="flex items-center gap-2">
-                    {brandLogo && (
-                      <Image
-                        src={brandLogo}
-                        alt={campaign.brand}
-                        width={24}
-                        height={24}
-                        className="rounded"
-                      />
-                    )}
-                    <span>By {campaign.brand}</span>
-                  </div>
+                {/* Quick Metadata */}
+                <div className="flex flex-wrap items-center gap-6 text-sm md:text-base text-white/90">
+                  {brandLogo && (
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
+                        <Image
+                          src={brandLogo}
+                          alt={campaign.brand}
+                          width={32}
+                          height={32}
+                          className="object-contain"
+                        />
+                      </div>
+                      <span className="font-medium">{campaign.brand}</span>
+                    </div>
+                  )}
                   
                   {campaign.agency && (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                       {agencyLogo && (
-                        <Image
-                          src={agencyLogo}
-                          alt={campaign.agency}
-                          width={24}
-                          height={24}
-                          className="rounded"
-                        />
+                        <div className="w-10 h-10 rounded-lg overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
+                          <Image
+                            src={agencyLogo}
+                            alt={campaign.agency}
+                            width={32}
+                            height={32}
+                            className="object-contain"
+                          />
+                        </div>
                       )}
-                      <span>Agency: {campaign.agency}</span>
+                      <span>{campaign.agency}</span>
                     </div>
                   )}
                   
                   {campaign.year && (
-                    <span>Year: {campaign.year}</span>
-                  )}
-                  
-                  {launchDate && launchDate !== '0000-00-00 00:00:00' && (
-                    <span>Launched: {new Date(launchDate).toLocaleDateString()}</span>
+                    <span className="text-[#cced00] font-semibold">{campaign.year}</span>
                   )}
                   
                   {country && (
-                    <span>📍 {country}{region ? `, ${region}` : ''}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">📍</span>
+                      <span>{country}{region ? `, ${region}` : ''}</span>
+                    </div>
                   )}
                 </div>
               </div>
             </div>
 
-            {/* Hero gallery - Show all media items */}
-            {mediaItems.length > 0 ? (
-              <section className="mb-12">
-                <div className="max-w-[1344px] mx-auto px-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {mediaItems.slice(0, 6).map((media: any, index: number) => (
-                      <div 
-                        key={media.id || index} 
-                        className="aspect-[3/5] rounded-[10px] overflow-hidden border border-white/20 shadow-[0_0_10px_rgba(0,0,0,0.2)]"
-                      >
-                        {media.type === 'video' ? (
-                          <video
-                            src={media.url}
-                            className="w-full h-full object-cover"
-                            controls
-                            preload="metadata"
-                          >
-                            Your browser does not support the video tag.
-                          </video>
-                        ) : (
-                          <Image
-                            src={media.url || campaign.image}
-                            alt={media.description || `${campaign.title} - Image ${index + 1}`}
-                            width={600}
-                            height={1000}
-                            className="w-full h-full object-cover"
-                          />
-                        )}
-                        {media.description && (
-                          <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-3 text-white text-sm">
-                            {media.description}
-                          </div>
-                        )}
+            {/* Detailed Metadata Section */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {brandLogo && (
+                <div className="bg-white/5 rounded-xl p-6 border border-white/10 backdrop-blur-sm">
+                  <div className="text-xs uppercase tracking-wider text-white/60 mb-3">Brand</div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0">
+                      <Image
+                        src={brandLogo}
+                        alt={campaign.brand}
+                        width={40}
+                        height={40}
+                        className="object-contain"
+                      />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-lg">{campaign.brand}</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {campaign.agency && (
+                <div className="bg-white/5 rounded-xl p-6 border border-white/10 backdrop-blur-sm">
+                  <div className="text-xs uppercase tracking-wider text-white/60 mb-3">Agency</div>
+                  <div className="flex items-center gap-3">
+                    {agencyLogo && (
+                      <div className="w-12 h-12 rounded-lg overflow-hidden bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0">
+                        <Image
+                          src={agencyLogo}
+                          alt={campaign.agency}
+                          width={40}
+                          height={40}
+                          className="object-contain"
+                        />
                       </div>
-                    ))}
-                  </div>
-                  {mediaItems.length > 6 && (
-                    <p className="text-center text-white/60 mt-4 text-sm">
-                      Showing 6 of {mediaItems.length} media items
-                    </p>
-                  )}
-                </div>
-              </section>
-            ) : (
-              // Fallback to cover image if no media items
-              <section className="mb-12">
-                <div className="max-w-[1068px] mx-auto px-4">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="aspect-[3/5] rounded-[10px] overflow-hidden border border-white/20 shadow-[0_0_10px_rgba(0,0,0,0.2)]">
-                      <Image
-                        src={campaign.image}
-                        alt={campaign.title}
-                        width={600}
-                        height={1000}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="aspect-[3/5] rounded-[10px] overflow-hidden border border-white/20 shadow-[0_0_10px_rgba(0,0,0,0.2)] hidden md:block">
-                      <Image
-                        src={campaign.image}
-                        alt={campaign.title}
-                        width={600}
-                        height={1000}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="aspect-[3/5] rounded-[10px] overflow-hidden border border-white/20 shadow-[0_0_10px_rgba(0,0,0,0.2)] hidden md:block">
-                      <Image
-                        src={campaign.image}
-                        alt={campaign.title}
-                        width={600}
-                        height={1000}
-                        className="w-full h-full object-cover"
-                      />
+                    )}
+                    <div>
+                      <div className="font-semibold text-lg">{campaign.agency}</div>
                     </div>
                   </div>
                 </div>
-              </section>
-            )}
+              )}
+              
+              {(campaign.year || launchDate) && (
+                <div className="bg-white/5 rounded-xl p-6 border border-white/10 backdrop-blur-sm">
+                  <div className="text-xs uppercase tracking-wider text-white/60 mb-3">Launch Date</div>
+                  <div className="font-semibold text-lg">
+                    {launchDate && launchDate !== '0000-00-00 00:00:00' 
+                      ? new Date(launchDate).toLocaleDateString('en-US', { 
+                          year: 'numeric', 
+                          month: 'long', 
+                          day: 'numeric' 
+                        })
+                      : campaign.year || 'N/A'
+                    }
+                  </div>
+                </div>
+              )}
+              
+              {(country || region) && (
+                <div className="bg-white/5 rounded-xl p-6 border border-white/10 backdrop-blur-sm">
+                  <div className="text-xs uppercase tracking-wider text-white/60 mb-3">Location</div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">📍</span>
+                    <div className="font-semibold text-lg">
+                      {country}
+                      {region && <span className="text-white/70">, {region}</span>}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
 
-            {/* Meta tags */}
-            {campaign.tags && campaign.tags.length > 0 && (
-              <div className="flex flex-wrap gap-3 text-sm">
-                {campaign.tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center rounded-full border border-white/20 bg-white/5 px-4 py-2 text-white text-sm"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {/* Description */}
+            {/* Description Section */}
             {fullDescription && (
-              <div className="space-y-8 max-w-[1344px]">
+              <div className="space-y-4">
+                <h2 className="text-2xl md:text-3xl font-bold">About This Campaign</h2>
                 <div className="prose prose-invert max-w-none">
-                  <p className="text-[20px] leading-relaxed text-[#f3f3f3] text-justify whitespace-pre-line">
+                  <p className="text-lg md:text-xl leading-relaxed text-white/90 whitespace-pre-line">
                     {fullDescription}
                   </p>
                 </div>
               </div>
             )}
 
-            {/* Additional Campaign Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[1344px]">
-              {mediaItems.length > 0 && (
-                <div className="bg-white/5 rounded-lg p-6 border border-white/20">
-                  <h3 className="text-lg font-semibold mb-3">Media</h3>
-                  <p className="text-white/80">{mediaItems.length} {mediaItems.length === 1 ? 'item' : 'items'}</p>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {mediaItems.map((media: any, index: number) => (
-                      <span key={media.id || index} className="text-xs bg-white/10 px-2 py-1 rounded">
-                        {media.type || 'image'}
-                      </span>
-                    ))}
-                  </div>
+            {/* Tags Section */}
+            {campaign.tags && campaign.tags.length > 0 && (
+              <div className="space-y-4">
+                <h2 className="text-2xl md:text-3xl font-bold">Tags</h2>
+                <div className="flex flex-wrap gap-3">
+                  {campaign.tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="inline-flex items-center rounded-full border border-[#cced00]/30 bg-[#cced00]/10 px-5 py-2.5 text-[#cced00] text-sm font-medium hover:bg-[#cced00]/20 transition-colors"
+                    >
+                      {tag}
+                    </span>
+                  ))}
                 </div>
-              )}
-              
-              {(country || region) && (
-                <div className="bg-white/5 rounded-lg p-6 border border-white/20">
-                  <h3 className="text-lg font-semibold mb-3">Location</h3>
-                  <p className="text-white/80">
-                    {country && <span>{country}</span>}
-                    {country && region && <span>, </span>}
-                    {region && <span>{region}</span>}
-                  </p>
+              </div>
+            )}
+
+            {/* Media Gallery Section */}
+            {mediaItems.length > 0 && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl md:text-3xl font-bold">Media Gallery</h2>
+                  <span className="text-white/60 text-sm">{mediaItems.length} {mediaItems.length === 1 ? 'item' : 'items'}</span>
                 </div>
-              )}
-            </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {mediaItems.map((media: any, index: number) => (
+                    <div 
+                      key={media.id || index} 
+                      className="group relative aspect-[4/5] rounded-xl overflow-hidden border border-white/20 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]"
+                    >
+                      {media.type === 'video' ? (
+                        <video
+                          src={media.url}
+                          className="w-full h-full object-cover"
+                          controls
+                          preload="metadata"
+                        >
+                          Your browser does not support the video tag.
+                        </video>
+                      ) : (
+                        <Image
+                          src={media.url || campaign.image}
+                          alt={media.description || `${campaign.title} - Image ${index + 1}`}
+                          fill
+                          className="object-cover"
+                        />
+                      )}
+                      
+                      {media.description && (
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <p className="text-white text-sm leading-relaxed">{media.description}</p>
+                        </div>
+                      )}
+                      
+                      {media.type === 'video' && (
+                        <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-medium text-white">
+                          Video
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
 
             {/* Related sections */}
             {relatedCampaigns.length > 0 && (

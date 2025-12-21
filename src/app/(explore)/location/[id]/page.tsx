@@ -5,7 +5,7 @@ import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
 import { CampaignCard } from "@/components/campaign/campaign-card"
 import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, MapPin } from "lucide-react"
 import { campaignService } from "@/lib/services/campaign.service"
 import { useAuth } from "@/lib/contexts/auth-context"
 import { useCampaign } from "@/lib/contexts/campaign-context"
@@ -78,25 +78,25 @@ function transformCampaign(apiCampaign: any): Campaign {
   }
 }
 
-export default function AgencyDetailPage() {
+export default function LocationDetailPage() {
   const params = useParams()
   const { user } = useAuth()
   const { syncBookmarkStates, setCampaignData } = useCampaign()
-  const [agencyCampaigns, setAgencyCampaigns] = useState<Campaign[]>([])
-  const [agencyName, setAgencyName] = useState<string>("")
+  const [locationCampaigns, setLocationCampaigns] = useState<Campaign[]>([])
+  const [locationName, setLocationName] = useState<string>("")
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const agencyId = params.id as string
+  const locationId = params.id as string
 
   useEffect(() => {
-    const fetchAgencyCampaigns = async () => {
+    const fetchLocationCampaigns = async () => {
       try {
         setIsLoading(true)
         setError(null)
 
         const userId = user?.id
-        console.log('📡 Fetching campaigns for agency:', agencyId, 'userId:', userId)
+        console.log('📡 Fetching campaigns for location:', locationId, 'userId:', userId)
 
         // Get all campaigns
         const response = await campaignService.getAllCampaigns(userId)
@@ -126,26 +126,88 @@ export default function AgencyDetailPage() {
           // Sync bookmark states
           syncBookmarkStates(transformedCampaigns)
 
-          // Filter campaigns by agency (matching the slug)
+          // Filter campaigns by location (matching the slug)
           const filtered = transformedCampaigns.filter((campaign) => {
-            if (!campaign.agency) return false
-            const campaignAgencySlug = campaign.agency.toLowerCase().replace(/\s+/g, "-").replace(/\+/g, "-")
-            return campaignAgencySlug === agencyId
+            // We need to get location from the original API campaign
+            const originalCampaign = allCampaigns.find(c => {
+              const transformed = transformCampaign(c)
+              return transformed.id === campaign.id
+            })
+            
+            if (!originalCampaign) return false
+
+            let country: string | undefined
+            let region: string | undefined
+
+            // Handle location from nested object
+            if (originalCampaign.location) {
+              if (typeof originalCampaign.location === 'object') {
+                country = originalCampaign.location.country
+                region = originalCampaign.location.region
+              }
+            }
+
+            // Handle flat structure
+            if (!country && originalCampaign.country) {
+              country = originalCampaign.country
+            }
+            if (!region && originalCampaign.region) {
+              region = originalCampaign.region
+            }
+
+            if (!country) return false
+
+            // Create location slug to match (same format as list page)
+            // List page creates: key = "country::region" then slug = key.replace(/\s+/g, "-").replace(/::/g, "-")
+            const locationKey = region 
+              ? `${country}::${region}`.toLowerCase()
+              : country.toLowerCase()
+            
+            const locationSlug = locationKey.replace(/\s+/g, "-").replace(/::/g, "-")
+
+            return locationSlug === locationId
           })
 
           if (filtered.length > 0) {
-            setAgencyName(filtered[0].agency || 'Unknown Agency')
-            setAgencyCampaigns(filtered)
-            console.log(`✅ Loaded ${filtered.length} campaigns for agency: ${filtered[0].agency}`)
+            // Get location name from first campaign
+            const firstOriginal = allCampaigns.find(c => {
+              const transformed = transformCampaign(c)
+              return transformed.id === filtered[0].id
+            })
+            
+            let country: string | undefined
+            let region: string | undefined
+            
+            if (firstOriginal?.location) {
+              if (typeof firstOriginal.location === 'object') {
+                country = firstOriginal.location.country
+                region = firstOriginal.location.region
+              }
+            }
+            
+            if (!country && firstOriginal?.country) {
+              country = firstOriginal.country
+            }
+            if (!region && firstOriginal?.region) {
+              region = firstOriginal.region
+            }
+
+            const displayName = region 
+              ? `${country}, ${region}`
+              : country || 'Unknown Location'
+
+            setLocationName(displayName)
+            setLocationCampaigns(filtered)
+            console.log(`✅ Loaded ${filtered.length} campaigns for location: ${displayName}`)
           } else {
-            setError('No campaigns found for this agency')
+            setError('No campaigns found for this location')
           }
         } else {
           setError(response.message || 'Failed to load campaigns')
         }
       } catch (err: any) {
         const appError = ErrorHandler.handleApiError(err)
-        ErrorHandler.logError(appError, 'Agency Detail Page')
+        ErrorHandler.logError(appError, 'Location Detail Page')
         const errorMessage = ErrorHandler.getUserFriendlyMessage(appError)
         setError(errorMessage)
       } finally {
@@ -153,19 +215,19 @@ export default function AgencyDetailPage() {
       }
     }
 
-    if (agencyId) {
-      fetchAgencyCampaigns()
+    if (locationId) {
+      fetchLocationCampaigns()
     }
-  }, [agencyId, user, syncBookmarkStates, setCampaignData])
+  }, [locationId, user, syncBookmarkStates, setCampaignData])
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#171a00] to-black text-white">
       <Navbar />
 
-      <main className="pt-24 pb-12">
+      <main className="pt-32 pb-12">
         <div className="container mx-auto px-6 max-w-7xl">
           <Link
-            href="/agencies"
+            href="/location"
             className="inline-flex items-center gap-2 text-sm text-[#cced00] hover:text-[#d6ff2f] transition-colors mb-8"
           >
             <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center">
@@ -182,21 +244,24 @@ export default function AgencyDetailPage() {
             <div className="text-center py-12">
               <p className="text-red-400">{error}</p>
             </div>
-          ) : agencyCampaigns.length === 0 ? (
+          ) : locationCampaigns.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-white/60">No campaigns found for this agency.</p>
+              <p className="text-white/60">No campaigns found for this location.</p>
             </div>
           ) : (
             <>
               <div className="mb-12">
-                <h1 className="text-4xl md:text-5xl font-bold mb-4 uppercase">{agencyName}</h1>
+                <div className="flex items-center gap-3 mb-4">
+                  <MapPin className="w-8 h-8 text-[#cced00]" />
+                  <h1 className="text-4xl md:text-5xl font-bold uppercase">{locationName}</h1>
+                </div>
                 <div className="text-sm text-white/60">
-                  {agencyCampaigns.length} {agencyCampaigns.length === 1 ? "campaign" : "campaigns"}
+                  {locationCampaigns.length} {locationCampaigns.length === 1 ? "campaign" : "campaigns"}
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {agencyCampaigns.map((campaign) => (
+                {locationCampaigns.map((campaign) => (
                   <CampaignCard key={campaign.id} {...campaign} />
                 ))}
               </div>
@@ -209,3 +274,4 @@ export default function AgencyDetailPage() {
     </div>
   )
 }
+

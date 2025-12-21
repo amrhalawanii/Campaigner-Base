@@ -8,6 +8,7 @@ import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { campaignService } from "@/lib/services/campaign.service"
 import { useAuth } from "@/lib/contexts/auth-context"
+import { useCampaign } from "@/lib/contexts/campaign-context"
 import { ErrorHandler } from "@/lib/utils/error-handler"
 import type { Campaign } from "@/lib/data/campaign-data"
 import { useParams } from "next/navigation"
@@ -80,6 +81,7 @@ function transformCampaign(apiCampaign: any): Campaign {
 export default function BrandDetailPage() {
   const params = useParams()
   const { user } = useAuth()
+  const { syncBookmarkStates, setCampaignData } = useCampaign()
   const [brandCampaigns, setBrandCampaigns] = useState<Campaign[]>([])
   const [brandName, setBrandName] = useState<string>("")
   const [isLoading, setIsLoading] = useState(true)
@@ -111,13 +113,24 @@ export default function BrandDetailPage() {
             allCampaigns = responseData.data
           }
 
+          // Transform all campaigns first
+          const transformedCampaigns = allCampaigns.map(transformCampaign)
+          
+          // Store campaign data in context
+          transformedCampaigns.forEach(campaign => {
+            if (campaign && campaign.id) {
+              setCampaignData(campaign.id, campaign)
+            }
+          })
+          
+          // Sync bookmark states
+          syncBookmarkStates(transformedCampaigns)
+
           // Filter campaigns by brand (matching the slug)
-          const filtered = allCampaigns
-            .map(transformCampaign)
-            .filter((campaign) => {
-              const campaignBrandSlug = campaign.brand.toLowerCase().replace(/\s+/g, "-")
-              return campaignBrandSlug === brandId
-            })
+          const filtered = transformedCampaigns.filter((campaign) => {
+            const campaignBrandSlug = campaign.brand.toLowerCase().replace(/\s+/g, "-")
+            return campaignBrandSlug === brandId
+          })
 
           if (filtered.length > 0) {
             setBrandName(filtered[0].brand)
@@ -142,7 +155,7 @@ export default function BrandDetailPage() {
     if (brandId) {
       fetchBrandCampaigns()
     }
-  }, [brandId, user])
+  }, [brandId, user, syncBookmarkStates, setCampaignData])
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#171a00] to-black text-white">
