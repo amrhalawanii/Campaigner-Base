@@ -34,6 +34,29 @@ export class CampaignService {
     }
     return apiService.get<Campaign[]>('/get_all_campaigns.php', params);
   }
+
+  async saveCampaign(campaignId: number, userId: number): Promise<ApiResponse<{ is_saved: boolean }>> {
+    return apiService.post<{ is_saved: boolean }>('/save_to_bookmark.php', {
+      campaign_id: campaignId,
+      user_id: userId,
+    });
+  }
+
+  async unsaveCampaign(campaignId: number, userId: number): Promise<ApiResponse<{ is_saved: boolean }>> {
+    return apiService.post<{ is_saved: boolean }>('/unsave_bookmark.php', {
+      campaign_id: campaignId,
+      user_id: userId,
+    });
+  }
+
+  async toggleSaveCampaign(campaignId: number, userId: number, currentSavedState: boolean): Promise<ApiResponse<{ is_saved: boolean }>> {
+    // Use save/unsave endpoints based on current state
+    if (currentSavedState) {
+      return this.unsaveCampaign(campaignId, userId);
+    } else {
+      return this.saveCampaign(campaignId, userId);
+    }
+  }
 }
 
 export const campaignService = new CampaignService();

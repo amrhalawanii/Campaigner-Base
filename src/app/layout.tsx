@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { SearchProvider } from "@/lib/contexts/search-context"
 import { AuthProvider } from "@/lib/contexts/auth-context"
+import { CampaignProvider } from "@/lib/contexts/campaign-context"
 import { SearchModal } from "@/components/search/search-modal"
 import { VersionLogger } from "@/components/shared/version-logger"
 import { Toaster } from "@/components/ui/toaster"
@@ -47,10 +48,12 @@ export default function RootLayout({
         <Suspense fallback={<div>Loading...</div>}>
           <VersionLogger />
           <AuthProvider>
-            <SearchProvider>
-              {children}
-              <SearchModal />
-            </SearchProvider>
+            <CampaignProvider>
+              <SearchProvider>
+                {children}
+                <SearchModal />
+              </SearchProvider>
+            </CampaignProvider>
           </AuthProvider>
           <Toaster />
         </Suspense>

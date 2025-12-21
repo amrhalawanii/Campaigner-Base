@@ -10,6 +10,7 @@ import { CampaignCard } from "@/components/campaign/campaign-card"
 import { CaseStudyCard } from "@/components/campaign/case-study-card"
 import { campaignService } from "@/lib/services/campaign.service"
 import { useAuth } from "@/lib/contexts/auth-context"
+import { useCampaign } from "@/lib/contexts/campaign-context"
 import { ErrorHandler } from "@/lib/utils/error-handler"
 import type { Campaign as ApiCampaign } from "@/lib/types/api.types"
 import type { Campaign } from "@/lib/data/campaign-data"
@@ -93,6 +94,7 @@ function transformCampaign(apiCampaign: any): Campaign {
 
 export default function HomePage() {
   const { user } = useAuth()
+  const { syncBookmarkStates, bookmarkedCampaigns, getCampaignData, setCampaignData } = useCampaign()
   const [allCampaigns, setAllCampaigns] = useState<Campaign[]>([])
   const [myCampaigns, setMyCampaigns] = useState<Campaign[]>([])
   const [youMightLike, setYouMightLike] = useState<Campaign[]>([])
@@ -297,6 +299,25 @@ export default function HomePage() {
           trendingData = allCampaigns
         }
 
+        // Collect all campaigns for bookmark state sync
+        const allCampaignsForSync = [
+          ...allCampaigns,
+          ...myCampaignsData,
+          ...youMightLikeData,
+          ...trendingData,
+          ...savedData,
+        ]
+
+        // Store campaign data in context for quick access
+        allCampaignsForSync.forEach(campaign => {
+          if (campaign && campaign.id) {
+            setCampaignData(campaign.id, campaign)
+          }
+        })
+
+        // Sync bookmark states to global context
+        syncBookmarkStates(allCampaignsForSync)
+
         // Update all state at once
         setAllCampaigns(allCampaigns)
         setMyCampaigns(myCampaignsData)
@@ -333,7 +354,59 @@ export default function HomePage() {
     }
 
     fetchCampaigns()
-  }, [user])
+  }, [user]) // Only fetch when user changes, not when bookmarks change
+
+  // Update saved campaigns carousel when bookmarks change
+  useEffect(() => {
+    // Skip if campaigns haven't been loaded yet
+    if (allCampaigns.length === 0 && myCampaigns.length === 0 && trendingCampaigns.length === 0 && youMightLike.length === 0) {
+      return
+    }
+
+    // Get all campaigns that are currently bookmarked
+    const bookmarkedIds = Array.from(bookmarkedCampaigns)
+    
+    // Create a map of all available campaigns for quick lookup
+    const allAvailableCampaigns = new Map<number, Campaign>()
+    ;[...allCampaigns, ...myCampaigns, ...trendingCampaigns, ...youMightLike, ...savedCampaigns].forEach(campaign => {
+      if (campaign && campaign.id && !allAvailableCampaigns.has(campaign.id)) {
+        allAvailableCampaigns.set(campaign.id, campaign)
+      }
+    })
+
+    const updatedSavedCampaigns = bookmarkedIds
+      .map(id => {
+        // First try to find in the map of all available campaigns
+        const campaign = allAvailableCampaigns.get(id)
+        if (campaign) {
+          return { ...campaign, saved: true }
+        }
+        // Try to get from context campaign data map
+        const campaignData = getCampaignData(id)
+        if (campaignData) {
+          return transformCampaign(campaignData)
+        }
+        return null
+      })
+      .filter((campaign): campaign is Campaign => campaign !== null)
+
+    // Only update if the list has actually changed (using functional update to avoid dependency)
+    setSavedCampaigns(prev => {
+      const currentIds = prev.map(c => c.id).sort().join(',')
+      const newIds = updatedSavedCampaigns.map(c => c.id).sort().join(',')
+      
+      if (currentIds !== newIds) {
+        console.log('📌 Updated saved campaigns carousel:', {
+          previousCount: prev.length,
+          newCount: updatedSavedCampaigns.length,
+          bookmarkedIds: bookmarkedIds.length
+        })
+        return updatedSavedCampaigns
+      }
+      return prev
+    })
+  }, [bookmarkedCampaigns, allCampaigns, myCampaigns, trendingCampaigns, youMightLike, getCampaignData])
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#171a00] to-black text-white">
       <Navbar />

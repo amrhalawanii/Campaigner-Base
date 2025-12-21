@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/footer"
 import { CampaignCard } from "@/components/campaign/campaign-card"
 import { campaignService } from "@/lib/services/campaign.service"
 import { useAuth } from "@/lib/contexts/auth-context"
+import { useCampaign } from "@/lib/contexts/campaign-context"
 import { ErrorHandler, type AppError } from "@/lib/utils/error-handler"
 import type { Campaign } from "@/lib/data/campaign-data"
 
@@ -57,6 +58,7 @@ function transformCampaign(apiCampaign: any): Campaign {
 
 export default function AllCampaignsPage() {
   const { user } = useAuth()
+  const { syncBookmarkStates } = useCampaign()
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -84,6 +86,8 @@ export default function AllCampaignsPage() {
           }
 
           setCampaigns(campaignsData)
+          // Sync bookmark states to global context
+          syncBookmarkStates(campaignsData)
           console.log(`Loaded ${campaignsData.length} campaigns`)
         } else {
           setError(response.message || 'No campaigns found')
@@ -108,7 +112,7 @@ export default function AllCampaignsPage() {
     }
 
     fetchCampaigns()
-  }, [user])
+  }, [user, syncBookmarkStates])
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#171a00] to-black text-white">

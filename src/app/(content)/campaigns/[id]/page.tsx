@@ -2,12 +2,12 @@ import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
 import { CampaignSection } from "@/components/campaign/campaign-section"
 import { Button } from "@/components/ui/button"
-import { Bookmark } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import { ShareButton } from "@/components/shared/share-button"
+import { BookmarkButton } from "@/components/campaign/bookmark-button"
 import { createSlug } from "@/lib/utils/slug"
 import { campaignService } from "@/lib/services/campaign.service"
 import { ErrorHandler } from "@/lib/utils/error-handler"
@@ -143,6 +143,38 @@ export default async function CampaignDetailPage({
     const country = location.country || null
     const region = location.region || null
 
+    // Comprehensive campaign information logging
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    console.log('📋 CAMPAIGN INFORMATION')
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    console.log('🆔 ID:', campaign.id)
+    console.log('📝 Title:', campaign.title)
+    console.log('🏢 Brand:', campaign.brand)
+    console.log('🎨 Agency:', campaign.agency || 'N/A')
+    console.log('📅 Year:', campaign.year || 'N/A')
+    console.log('📍 Location:', country ? `${country}${region ? `, ${region}` : ''}` : 'N/A')
+    console.log('💾 Saved:', campaign.saved ? 'Yes' : 'No')
+    console.log('🖼️  Cover Image:', campaign.image)
+    console.log('📄 Description:', fullDescription ? `${fullDescription.substring(0, 100)}...` : 'N/A')
+    console.log('🏷️  Tags:', campaign.tags && campaign.tags.length > 0 ? campaign.tags.join(', ') : 'N/A')
+    console.log('📅 Launch Date:', launchDate && launchDate !== '0000-00-00 00:00:00' ? launchDate : 'N/A')
+    console.log('🖼️  Brand Logo:', brandLogo || 'N/A')
+    console.log('🎨 Agency Logo:', agencyLogo || 'N/A')
+    console.log('📸 Media Items:', mediaItems.length)
+    if (mediaItems.length > 0) {
+      console.log('   Media Details:')
+      mediaItems.forEach((media: any, index: number) => {
+        console.log(`   ${index + 1}. Type: ${media.type || 'image'}, URL: ${media.url || 'N/A'}`)
+        if (media.description) {
+          console.log(`      Description: ${media.description}`)
+        }
+      })
+    }
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    console.log('📊 Transformed Campaign Object:')
+    console.log(JSON.stringify(campaign, null, 2))
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+
     // Fetch related campaigns for "You Might Like" section
     let relatedCampaigns: Campaign[] = []
     try {
@@ -198,14 +230,13 @@ export default async function CampaignDetailPage({
                     title={campaign.title}
                     slug={createSlug(campaign.title)}
                   />
-                  <Button
+                  <BookmarkButton
+                    campaignId={campaign.id}
+                    initialSaved={campaign.saved}
                     size="icon"
                     variant="outline"
                     className="h-10 w-10 rounded-full backdrop-blur-[25px] border border-[rgba(57,77,81,0.5)] bg-black/40 hover:bg-[rgba(204,237,0,0.2)] hover:border-[rgba(204,237,0,0.3)] transition-all duration-200 group"
-                    aria-label="Save campaign"
-                  >
-                    <Bookmark className={`w-5 h-5 ${campaign.saved ? "fill-[#CCED00] text-[#CCED00]" : "text-white"} group-hover:text-[#CCED00] transition-colors duration-200`} />
-                  </Button>
+                  />
                 </div>
               </div>
 
